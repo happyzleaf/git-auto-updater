@@ -2,7 +2,7 @@ const logger = require('../utils/logger').create('LocalTunnel');
 const localtunnel = require('localtunnel');
 
 async function start(flags) {
-    logger.info('Starting server...');
+    logger.info('Starting tunnel...');
 
     const tunnel = await localtunnel({
         port: flags.port,
@@ -11,17 +11,15 @@ async function start(flags) {
 
     if (flags.subdomain && !new RegExp(`^https:\\/\\/${flags.subdomain}\\.loca\\.lt$`).test(tunnel.url)) {
         logger.info('Could not obtain the subdomain \'{}\'. You could try to specify a more unique one.', flags.subdomain);
-        process.exit(0);
+        return undefined;
     }
 
     tunnel.on('close', () => {
         logger.info('The tunnel was closed.');
-        process.exit(0);
+        return undefined;
     });
 
-    logger.info('Tunneling \'localhost:{}\' to \'{}\'.', flags.port, tunnel.url);
-
-    logger.info('Done.');
+    return tunnel.url;
 }
 
 module.exports = {start};

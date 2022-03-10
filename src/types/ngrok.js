@@ -2,7 +2,7 @@ const logger = require('../utils/logger').create('ngrok');
 const ngrok = require('ngrok');
 
 async function start(flags) {
-    logger.info('Starting server...');
+    logger.info('Starting tunnel...');
 
     let url;
     try {
@@ -16,17 +16,15 @@ async function start(flags) {
         logger.error('Could not start the ngrok tunnel. If you\'ve specified a subdomain, make sure that you have a paid account and you\'ve added the auth token.');
         // console.error(e);
         console.log(e);
-        process.exit(0);
+        return undefined;
     }
 
     if (flags.subdomain && !new RegExp(`^https:\\/\\/${flags.subdomain}\\.eu\\.ngrok\\.it$`).test(url)) {
         logger.info('Could not obtain the subdomain \'{}\'.', flags.subdomain);
-        process.exit(0);
+        return undefined;
     }
 
-    logger.info('Tunneling \'localhost:{}\' to \'{}\'.', flags.port, tunnel.url);
-
-    logger.info('Done.');
+    return url;
 }
 
 module.exports = {start};

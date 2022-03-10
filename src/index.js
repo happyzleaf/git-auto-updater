@@ -47,6 +47,12 @@ app.post('/payload', (req, res) => {
 app.listen(flags.port, async () => {
     logger.info('Listening to {}.', flags.port);
     if (flags.type) {
-        require(`./types/${flags.type}`).start(flags);
+        const url = await require(`./types/${flags.type}`).start(flags);
+        if (!url) {
+            logger.error('Could not start the tunnel. Exiting...');
+            process.exit(0);
+        }
+
+        logger.info('Tunneling \'localhost:{}\' to \'{}\'.', flags.port, url);
     }
 });
